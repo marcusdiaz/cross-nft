@@ -21,12 +21,13 @@ contract YourCollectible is ERC721, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() public ERC721("Loogies", "LOOG") {
+  constructor() public ERC721("Freedom", "FREEDOM") {
     // RELEASE THE LOOGIES!
   }
 
   mapping (uint256 => bytes3) public color;
   mapping (uint256 => uint256) public chubbiness;
+  mapping (uint256 => string) public scripture;
 
   uint256 mintDeadline = block.timestamp + 24 hours;
 
@@ -44,13 +45,16 @@ contract YourCollectible is ERC721, Ownable {
       color[id] = bytes2(predictableRandom[0]) | ( bytes2(predictableRandom[1]) >> 8 ) | ( bytes3(predictableRandom[2]) >> 16 );
       chubbiness[id] = 35+((55*uint256(uint8(predictableRandom[3])))/255);
 
+      scripture[id] = getScripture();
+
       return id;
   }
 
   function tokenURI(uint256 id) public view override returns (string memory) {
       require(_exists(id), "not exist");
-      string memory name = string(abi.encodePacked('Loogie #',id.toString()));
-      string memory description = string(abi.encodePacked('This Loogie is the color #',color[id].toColor(),' with a chubbiness of ',uint2str(chubbiness[id]),'!!!'));
+      string memory name = string(abi.encodePacked('Freedom',id.toString()));
+      //string memory description = string(abi.encodePacked('This Loogie is the color #',color[id].toColor(),' with a chubbiness of ',uint2str(chubbiness[id]),'!!!'));
+      //string memory image = Base64.encode(bytes(generateSVGofTokenById(id)));
       string memory image = Base64.encode(bytes(generateSVGofTokenById(id)));
 
       return
@@ -62,10 +66,10 @@ contract YourCollectible is ERC721, Ownable {
                           abi.encodePacked(
                               '{"name":"',
                               name,
-                              '", "description":"',
-                              description,
-                              '", "external_url":"https://burnyboys.com/token/',
-                              id.toString(),
+//                              '", "description":"',
+ //                             description,
+//                              '", "external_url":"https://burnyboys.com/token/',
+//                              id.toString(),
                               '", "attributes": [{"trait_type": "color", "value": "#',
                               color[id].toColor(),
                               '"},{"trait_type": "chubbiness", "value": ',
@@ -87,12 +91,25 @@ contract YourCollectible is ERC721, Ownable {
 
     string memory svg = string(abi.encodePacked(
       '<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">',
-        renderTokenById(id),
+        renderCrossToken(id),
       '</svg>'
     ));
 
     return svg;
   }
+
+  function renderCrossToken(uint256 id) public view returns (string memory) {
+
+    string memory render = string(abi.encodePacked(
+      '<rect x="196" y="90" width="14" height="176" style="fill:#872"/>',
+      '<rect x="150" y="143" width="102" height="14" style="fill:#872"/>',
+      '<text x="50%" y="10%" dominant-baseline="middle" text-anchor="middle">It is for freedom that Christ has set us free.</text>'
+    ));
+
+    return render;
+
+  }
+
 
   // Visibility is `public` to enable it being called by other contracts for composition.
   function renderTokenById(uint256 id) public view returns (string memory) {
