@@ -21,6 +21,17 @@ contract YourCollectible is ERC721, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
+  string[] private scriptures = [
+        "Blessed are the poor in spirt",
+        "Blessed are those who mourn",
+        "Blessed are the meek",
+        "Blessed are those who hunger and thirst for righteousness",
+        "Blessed are the merciful",
+        "Blessed are the pure in heart",
+        "Blessed are the peacemakers",
+        "Blessed are those who are persecuted because of righteousness"
+    ];
+
   constructor() public ERC721("Freedom", "FREEDOM") {
     // RELEASE THE LOOGIES!
   }
@@ -29,13 +40,10 @@ contract YourCollectible is ERC721, Ownable {
   mapping (uint256 => uint256) public chubbiness;
   mapping (uint256 => string) public scripture;
 
-  uint256 mintDeadline = block.timestamp + 24 hours;
-
   function mintItem()
       public
       returns (uint256)
   {
-      require( block.timestamp < mintDeadline, "DONE MINTING");
       _tokenIds.increment();
 
       uint256 id = _tokenIds.current();
@@ -43,11 +51,26 @@ contract YourCollectible is ERC721, Ownable {
 
       bytes32 predictableRandom = keccak256(abi.encodePacked( blockhash(block.number-1), msg.sender, address(this) ));
       color[id] = bytes2(predictableRandom[0]) | ( bytes2(predictableRandom[1]) >> 8 ) | ( bytes3(predictableRandom[2]) >> 16 );
-      chubbiness[id] = 35+((55*uint256(uint8(predictableRandom[3])))/255);
+      
+      scripture[id] = getScripture(id);
 
-      scripture[id] = getScripture();
+      //transfer to caller
 
       return id;
+  }
+
+  function random(string memory input) internal pure returns (uint256) {
+      return uint256(keccak256(abi.encodePacked(input)));
+  }
+
+  function getScripture(uint256 id) public view returns (string memory) {
+    return pluck(id, "SCRIPTURE", scriptures);
+  }
+
+  function pluck(uint256 tokenId, string memory keyPrefix, string[] memory sourceArray) internal pure returns (string memory) {
+        uint256 rand = random(string(abi.encodePacked(keyPrefix, uint2str(tokenId))));
+        string memory output = sourceArray[rand % sourceArray.length];
+        return output;
   }
 
   function tokenURI(uint256 id) public view override returns (string memory) {
@@ -72,8 +95,8 @@ contract YourCollectible is ERC721, Ownable {
 //                              id.toString(),
                               '", "attributes": [{"trait_type": "color", "value": "#',
                               color[id].toColor(),
-                              '"},{"trait_type": "chubbiness", "value": ',
-                              uint2str(chubbiness[id]),
+                              '"},{"trait_type": "scripture", "value": ',
+                              scripture[id],
                               '}], "owner":"',
                               (uint160(ownerOf(id))).toHexString(20),
                               '", "image": "',
@@ -103,7 +126,9 @@ contract YourCollectible is ERC721, Ownable {
     string memory render = string(abi.encodePacked(
       '<rect x="196" y="90" width="14" height="176" style="fill:#872"/>',
       '<rect x="150" y="143" width="102" height="14" style="fill:#872"/>',
-      '<text x="50%" y="10%" dominant-baseline="middle" text-anchor="middle">It is for freedom that Christ has set us free.</text>'
+      '<text x="50%" y="10%" dominant-baseline="middle" text-anchor="middle">',
+      scripture[id],
+      '</text>'
     ));
 
     return render;

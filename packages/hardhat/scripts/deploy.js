@@ -25,7 +25,7 @@ const main = async () => {
   const yourCollectible = await deploy("YourCollectible"/*,[ bytes32Array ]*/) // <-- add in constructor args like line 19 vvvv
 
   //yourCollectible.transferOwnership("0x34aA3F359A9D614239015126635CE7732c18fDF3") //austingriffith.eth
-  yourCollectible.transferOwnership("0xe45FC8a689e708F27D16299C81f7FDDB23Fc5097") //marcus dev
+yourCollectible.transferOwnership("0xe45FC8a689e708F27D16299C81f7FDDB23Fc5097") //marcus dev
 
 
 
