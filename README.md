@@ -1,3 +1,21 @@
+# 🏗 Cross NFT
+
+
+## Notes
+
+As of  Oct 10 EOD the project in solidity_progs/final_run/loogies-svg-nft has a good functioning contract.
+
+
+## TO DO
+
+1. Need to test on the contract, make sure if it receives any pmt that it gets kept by the contract
+and that I can withdraw it.
+
+2. Need to build a frontend. Should just use the builder directions to do it and see if I can purpose
+   that project.
+
+
+
 # 🏗 Sending Ether
 
 Sending and receiving ether is one of the most fundamental things that a smart contract will do. However, a beginner learning solidity will find three options available for sending ether: `send()`, `transfer()`, and `call()`. Why three options? Which should you choose? There are profound security implications involved.
