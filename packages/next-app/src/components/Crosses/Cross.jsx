@@ -7,6 +7,8 @@ const Cross = (props) => {
       "0xcbdf4e0141684addc7b9b6d2ad1a65dddd243ee4",
       "11"
     )
+
+    console.log("Props: ", props)
   
     // nft.loading is true during load.
     if (loading) return <>Loading…</>
