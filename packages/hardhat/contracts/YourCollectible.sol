@@ -32,7 +32,7 @@ contract YourCollectible is ERC721, Ownable {
         "Blessed are those who are persecuted because of righteousness"
     ];
 
-  constructor() public ERC721("Blessings", "BLESS") {
+  constructor() public ERC721("Cross Bearer", "ONCHAINCROSS") {
     // RELEASE THE LOOGIES!
   }
 
@@ -53,7 +53,8 @@ contract YourCollectible is ERC721, Ownable {
 
       require(id < 144000, "Minting is complete");
 
-      require(msg.value > 1, "Need to pay some Eth");
+      //emd
+//      require(msg.value > 1, "Need to pay some Eth");
 
       _mint(msg.sender, id);
 
@@ -70,25 +71,12 @@ contract YourCollectible is ERC721, Ownable {
       return id;
   }
 
-  function aatestRandoms(uint256 id) public returns (bytes2 foo) {
-      bytes32 predictableRandom = keccak256(abi.encodePacked( blockhash(block.number-1), msg.sender, address(this) ));
-/*
-      bgColor[id] = ( bytes2(uint16(255-uint8(predictableRandom[0]))) ^ 0xFF                       ) | 
-                    ( bytes2((bytes2(uint16(255-uint8(predictableRandom[0]))) >> 8) ^ 0xFFFF)      ) | 
-                    ( bytes3((bytes3(uint16(255-uint8(predictableRandom[0]))) >> 16) ^ 0xFFFFFF)   ) ;
-*/
-      bytes2 foo = bytes2((bytes2(uint16(255-uint8(predictableRandom[0]))) >> 8) ^ 0xFFFF) ;
-
-      return foo;
-
-  }
-
   function random(string memory input) internal pure returns (uint256) {
       return uint256(keccak256(abi.encodePacked(input)));
   }
 
   function getScripture(uint256 id) public view returns (string memory) {
-    return pluck(id, "BLESSING", scriptures);
+    return pluck(id, "cross-bearer", scriptures);
   }
 
   function pluck(uint256 tokenId, string memory keyPrefix, string[] memory sourceArray) internal pure returns (string memory) {
@@ -97,94 +85,43 @@ contract YourCollectible is ERC721, Ownable {
         return output;
   }
 
-/*****************
-  This version of tokenURI (below) is the new/target version 
-  which I am forming into something working and which shows the cross
-  instead of loogie.
- */
-/*
   function tokenURI(uint256 id) public view override returns (string memory) {
-      require(_exists(id), "not exist");
-      string memory name = string(abi.encodePacked('FREE #',id.toString()));
-      string memory description = string(abi.encodePacked('This Loogie is the color #',color[id].toColor(),' with a chubbiness of ',uint2str(chubbiness[id]),'!!!'));
-      string memory image = Base64.encode(bytes(generateSVGofTokenById(id)));
+    require(_exists(id), "not exist");
+    string memory name = string(abi.encodePacked('cross-bearer ',id.toString()));
+    string memory description = string(abi.encodePacked('color #',color[id].toColor(),' bg of ',bgColor[id].toColor(), '!!' ) );
+    string memory image = Base64.encode(bytes(generateSVGofTokenById(id)));
 
-      return
-          string(
-              abi.encodePacked(
-                'data:application/json;base64,',
-                Base64.encode(
-                    bytes(
-                          abi.encodePacked(
-                              '{"name":"',
-                              name,
-                              '", "description":"',
-                              description,
-                              '", "attributes": [{"trait_type": "color", "value": "#',
-                              color[id].toColor(),
-                              '"},{"trait_type": "scripture", "value": ',
-                              scripture[id],
-                              '},{"trait_type": "chubbiness", "value": ',
-                              chubbiness[id],
-                              '}], "owner":"',
-                              (uint160(ownerOf(id))).toHexString(20),
-                              '", "image": "',
-                              'data:image/svg+xml;base64,',
-                              image,
-                              '"}'
-                          )
-                        )
+    return
+      string(
+          abi.encodePacked(
+            'data:application/json;base64,',
+            Base64.encode(
+                bytes(
+                      abi.encodePacked(
+                          '{"name":"',
+                          name,
+                          //'", "description":"',
+                          //description,
+                          //'", "external_url":"https://burnyboys.com/token/',
+                          //id.toString(),
+                          '", "attributes": [{"trait_type": "color", "value": "#',
+                          color[id].toColor(),
+                          '"}], "owner":"',
+                          (uint160(ownerOf(id))).toHexString(20),
+                          '", "image": "',
+                          'data:image/svg+xml;base64,',
+                          image,
+                          '"}'
+                      )
                     )
-              )
-          );
-  }
-  */
-
-/*****************
-  This version of tokenURI (below) is the original version from loogies svg nft 
-  in its original working form.
- */
-    function tokenURI(uint256 id) public view override returns (string memory) {
-      require(_exists(id), "not exist");
-      string memory name = string(abi.encodePacked('BLESSING ',id.toString()));
-      string memory description = string(abi.encodePacked('color #',color[id].toColor(),' bg of ',bgColor[id].toColor(), '!!' ) );
-      string memory image = Base64.encode(bytes(generateSVGofTokenById(id)));
-
-      return
-          string(
-              abi.encodePacked(
-                'data:application/json;base64,',
-                Base64.encode(
-                    bytes(
-                          abi.encodePacked(
-                              '{"name":"',
-                              name,
-                              //'", "description":"',
-                              //description,
-                              //'", "external_url":"https://burnyboys.com/token/',
-                              //id.toString(),
-                              '", "attributes": [{"trait_type": "color", "value": "#',
-                              color[id].toColor(),
-                              '"},{"trait_type": "chubbiness", "value": ',
-                              uint2str(chubbiness[id]),
-                              '}], "owner":"',
-                              (uint160(ownerOf(id))).toHexString(20),
-                              '", "image": "',
-                              'data:image/svg+xml;base64,',
-                              image,
-                              '"}'
-                          )
-                        )
-                    )
-              )
-          );
+                )
+          )
+      );
   }
 
   function generateSVGofTokenById(uint256 id) internal view returns (string memory) {
-
     string memory svg = string(abi.encodePacked(
       '<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">',
-       // renderTokenById(id),
         renderCrossToken(id),
       '</svg>'
     ));
@@ -192,47 +129,21 @@ contract YourCollectible is ERC721, Ownable {
     return svg;
   }
 
-    function renderCrossToken(uint256 id) public view returns (string memory) {
-
+  function renderCrossToken(uint256 id) public view returns (string memory) {
     string memory render = string(abi.encodePacked(
-          '<rect x="0" y="0" width="400" height="400" style="fill:#',
-          bgColor[id].toColor(),
-          '"/>',
-          '<rect x="196" y="90" width="14" height="176" style="fill:#',
-          color[id].toColor(),
-          '"/>',
-          '<rect x="150" y="143" width="102" height="14" style="fill:#',
-          color[id].toColor(),
-          '"/>',
-          '<text x="50%" y="10%" dominant-baseline="middle" text-anchor="middle">',
-          scripture[id],
-          '</text>'
+      '<rect x="0" y="0" width="400" height="400" style="fill:#',
+      bgColor[id].toColor(),
+      '"/>',
+      '<rect x="196" y="90" width="14" height="176" style="fill:#',
+      color[id].toColor(),
+      '"/>',
+      '<rect x="150" y="143" width="102" height="14" style="fill:#',
+      color[id].toColor(),
+      '"/>',
+      '<text x="50%" y="10%" dominant-baseline="middle" text-anchor="middle">',
+      scripture[id],
+      '</text>'
     ));
-
-    return render;
-
-  }
-
-
-  // Visibility is `public` to enable it being called by other contracts for composition.
-  function renderTokenById(uint256 id) public view returns (string memory) {
-    string memory render = string(abi.encodePacked(
-      '<g id="eye1">',
-          '<ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_1" cy="154.5" cx="181.5" stroke="#000" fill="#fff"/>',
-          '<ellipse ry="3.5" rx="2.5" id="svg_3" cy="154.5" cx="173.5" stroke-width="3" stroke="#000" fill="#000000"/>',
-        '</g>',
-        '<g id="head">',
-          '<ellipse fill="#',
-          color[id].toColor(),
-          '" stroke-width="3" cx="204.5" cy="211.80065" id="svg_5" rx="',
-          chubbiness[id].toString(),
-          '" ry="51.80065" stroke="#000"/>',
-        '</g>',
-        '<g id="eye2">',
-          '<ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_2" cy="168.5" cx="209.5" stroke="#000" fill="#fff"/>',
-          '<ellipse ry="3.5" rx="3" id="svg_4" cy="169.5" cx="208" stroke-width="3" fill="#000000" stroke="#000"/>',
-        '</g>'
-      ));
 
     return render;
   }
